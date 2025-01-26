@@ -82,7 +82,7 @@ const handleDrag = (e: MouseEvent) => {
     // Only process drag events if we're very close to the separator
     const separatorRect = currentSeparator.getBoundingClientRect();
     const threshold = 5; // pixels
-    if (Math.abs(e.clientX - separatorRect.left) > threshold && 
+    if (Math.abs(e.clientX - separatorRect.left) > threshold ||
         Math.abs(e.clientX - separatorRect.right) > threshold) return;
 
     const gridColumns = getComputedStyle(document.body).gridTemplateColumns.split(' ');
