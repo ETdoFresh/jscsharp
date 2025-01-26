@@ -79,6 +79,12 @@ const stopDragging = () => {
 const handleDrag = (e: MouseEvent) => {
     if (!isDragging || !currentSeparator) return;
 
+    // Only process drag events if we're very close to the separator
+    const separatorRect = currentSeparator.getBoundingClientRect();
+    const threshold = 5; // pixels
+    if (Math.abs(e.clientX - separatorRect.left) > threshold && 
+        Math.abs(e.clientX - separatorRect.right) > threshold) return;
+
     const gridColumns = getComputedStyle(document.body).gridTemplateColumns.split(' ');
     
     if (currentSeparator.id === 'left-separator') {
@@ -117,6 +123,5 @@ if (rightSeparator) {
     rightSeparator.addEventListener('mousedown', (e) => startDragging(e, rightSeparator));
 }
 
-document.addEventListener('mousemove', handleDrag);
-document.addEventListener('mouseup', stopDragging);
-document.addEventListener('mouseleave', stopDragging);
+window.addEventListener('mouseup', stopDragging);
+window.addEventListener('mousemove', handleDrag);

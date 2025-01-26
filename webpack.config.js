@@ -35,7 +35,7 @@ module.exports = {
       directory: path.join(__dirname, 'dist')
     },
     hot: true,
-    watchFiles: ['index.html'],
+    watchFiles: ['index.html', 'src/**/*.css'],
     port: 8080
   },
   mode: 'development'
