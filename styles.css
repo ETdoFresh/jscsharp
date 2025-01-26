@@ -3,27 +3,58 @@ body {
     grid-template-columns: 200px 1fr 300px; /* Sidebar, Editor, Preview */
     height: 100vh;
     margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
-
+ 
 #sidebar {
     background-color: #f0f0f0;
     border-right: 1px solid #ccc;
+    padding: 10px;
+}
+
+#sidebar h3 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #333;
+}
+
+#sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#sidebar li {
+    padding: 4px 8px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+#sidebar li:hover {
+    background-color: #e0e0e0;
 }
 
 #editor-area {
     background-color: #fff;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 10px;
+    border: none;
+    resize: none;
+    width: 100%;
+    height: 100%;
+    box-sizing: border-box;
 }
-
+ 
 #preview-area {
     background-color: #e0e0e0;
     border-left: 1px solid #ccc;
+    padding: 10px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+    white-space: pre-wrap;
+    overflow-y: auto;
 }
-
-@media (max-width: 768px) {
-    body {
-        grid-template-columns: 1fr; /* Stack on smaller screens */
-    }
-    #sidebar, #preview-area {
-        display: none; /* Hide sidebar and preview on smaller screens */
-    }
-}
+ 

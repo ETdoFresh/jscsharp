@@ -48,7 +48,7 @@
 ## Mandatory Git Workflow
 Before committing, always follow these steps in order:
 1. Stage all changes: `git add .`
-2. Review changes: `git --no-pager diff`
+2. Review changes: `git --no-pager diff --cached`
 3. Commit changes: `git commit -m "Your commit message here"`
 4. Push changes: `git push`
 
