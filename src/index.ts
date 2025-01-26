@@ -1,3 +1,5 @@
+import './styles.css';
+
 function highlightSyntax(text: string): string {
     // C# keywords
     const keywords = [

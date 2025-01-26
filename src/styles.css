@@ -69,7 +69,6 @@ body {
 .separator {
     background-color: #e0e0e0;
     cursor: col-resize;
-    height: 100vh;
     user-select: none;
     transition: background-color 0.2s;
 }
@@ -96,7 +95,7 @@ body {
 
 @media (orientation: portrait) {
     body {
-        grid-template-columns: 1fr 2px 300px;
+        grid-template-columns: 1fr 2px 300px; /* Editor, Separator, Preview */
     }
 
     #explorer-toggle {
