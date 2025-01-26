@@ -1,0 +1,29 @@
+body {
+    display: grid;
+    grid-template-columns: 200px 1fr 300px; /* Sidebar, Editor, Preview */
+    height: 100vh;
+    margin: 0;
+}
+
+#sidebar {
+    background-color: #f0f0f0;
+    border-right: 1px solid #ccc;
+}
+
+#editor-area {
+    background-color: #fff;
+}
+
+#preview-area {
+    background-color: #e0e0e0;
+    border-left: 1px solid #ccc;
+}
+
+@media (max-width: 768px) {
+    body {
+        grid-template-columns: 1fr; /* Stack on smaller screens */
+    }
+    #sidebar, #preview-area {
+        display: none; /* Hide sidebar and preview on smaller screens */
+    }
+}
