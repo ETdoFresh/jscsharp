@@ -1,8 +1,7 @@
 {
   "compilerOptions": {
-    "target": "es6",
-    "module": "esnext",
-    "moduleResolution": "node",
+    "target": "es2015",
+    "module": "none",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
