@@ -89,8 +89,8 @@ const handleDrag = (e: MouseEvent) => {
     } else if (currentSeparator.id === 'right-separator') {
         const totalWidth = document.body.clientWidth;
         const minWidth = 200; // Minimum width for preview
-        const maxX = totalWidth - minWidth;
-        const newWidth = totalWidth - Math.min(maxX, Math.max(e.clientX, totalWidth - 600));
+        const newWidth = Math.max(minWidth, totalWidth - e.clientX);
+        gridColumns[2] = '1fr'; // Ensure middle column takes remaining space
         gridColumns[4] = newWidth + 'px';
         document.body.style.gridTemplateColumns = gridColumns.join(' ');
     }
