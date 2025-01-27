@@ -10,6 +10,11 @@ npm install
 npm run dev
 ```
 
+### Viewing the Application
+There are two ways to view the development server:
+1. Press `F5` to launch the development server with an external browser
+2. Press `Ctrl+Shift+B` to open the development server in VSCode's Simple Browser view
+
 ## Project Plan (from PLAN.md)
 - **Phase 1: UI Foundation**
   - Basic layout (HTML `div`s for sidebar, editor, preview)

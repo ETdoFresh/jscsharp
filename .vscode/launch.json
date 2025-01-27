@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Development Server with Browser",
+            "request": "launch",
+            "type": "node-terminal",
+            "command": "npm run dev",
+            "serverReadyAction": {
+                "pattern": "webpack compiled successfully",
+                "uriFormat": "http://localhost:8080",
+                "action": "openExternally"
+            }
+        }
+    ]
+}
