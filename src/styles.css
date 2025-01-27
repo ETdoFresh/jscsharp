@@ -1,7 +1,7 @@
 body {
     display: grid;
     grid-template-rows: auto 1fr;
-    grid-template-columns: 60px 200px 4px 1fr 4px 300px;
+    grid-template-columns: 60px minmax(auto, 400px) 4px 1fr 4px 300px;
     height: 100vh;
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -11,8 +11,8 @@ body {
 #fixed-sidebar {
     grid-row: 2;
     grid-column: 1;
-    background-color: #2c2c2c;
-    color: #fff;
+    background-color: rgba(255, 182, 193, 0.3); /* Pale pink */
+    color: #000;
     height: 100%;
     width: 60px;
     display: flex;
@@ -75,7 +75,7 @@ body {
 #sidebar {
     grid-row: 2;
     grid-column: 2;
-    background-color: #f8f9fa;
+    background-color: rgba(173, 216, 230, 0.3); /* Pale blue */
     border-right: 1px solid #ccc;
     height: 100%;
     box-sizing: border-box;
@@ -83,7 +83,8 @@ body {
     transition: transform 0.3s ease;
     display: flex;
     flex-direction: column;
-    width: 200px;
+    min-width: 0;
+    width: 100%;
     will-change: transform;
 }
 
@@ -126,8 +127,16 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    max-width: 100%;
+    width: 100%;
+    min-width: 0;
     box-sizing: border-box;
+}
+
+.explorer-content ul {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 }
 
 /* Explorer toolbar */
@@ -160,6 +169,10 @@ body {
     list-style: none;
     padding: 0;
     margin: 0 0 0 16px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .explorer-tree > ul {
@@ -167,11 +180,27 @@ body {
 }
 
 .explorer-tree li {
-    padding: 2px 0;
+    padding: 4px 12px;
     cursor: pointer;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    overflow: visible;
+    min-width: 0;
+    width: 100%;
+    white-space: normal;
+    text-overflow: clip;
+    word-break: break-word;
+    box-sizing: border-box;
+    background-color: rgba(0, 0, 0, 0.03);
+    border-radius: 4px;
+    margin: 1px 0;
+    display: flex;
+    flex: 1 1 auto;
+}
+
+.explorer-tree ul {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
 }
 
 .explorer-tree .folder > ul {
@@ -190,12 +219,13 @@ body {
 
 .explorer-tree .folder-name:hover,
 .explorer-tree .file:hover {
-    background-color: rgba(0, 0, 0, 0.05);
+    background-color: rgba(0, 0, 0, 0.08);
 }
 
 .explorer-tree .file {
-    padding: 2px 4px;
+    padding: 4px 8px;
     border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.03);
 }
 
 .explorer-content h3 {
@@ -218,18 +248,28 @@ body {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .explorer-content li {
-    padding: 4px 8px;
+    padding: 4px 12px;
     font-size: 13px;
     cursor: pointer;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal;
+    overflow: visible;
+    word-break: break-word;
     border-radius: 4px;
-    margin: 2px 0;
+    margin: 1px 0;
     transition: background-color 0.2s ease;
+    min-width: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex: 1 1 auto;
+    box-sizing: border-box;
 }
 
 .explorer-content li:hover {
@@ -306,7 +346,7 @@ body {
 .editor-area {
     grid-row: 2;
     grid-column: 4;
-    background-color: #f5f5f5;
+    background-color: rgba(144, 238, 144, 0.3); /* Pale green */
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 14px;
     line-height: 1.5;
@@ -337,7 +377,7 @@ body {
 #preview-area {
     grid-row: 2;
     grid-column: 6;
-    background-color: #fff;
+    background-color: rgba(255, 218, 185, 0.3); /* Pale peach */
     padding: 15px;
     height: 100%;
     box-sizing: border-box;
