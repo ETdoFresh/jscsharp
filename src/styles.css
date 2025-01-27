@@ -107,7 +107,7 @@ body {
 
 @media (orientation: portrait) {
     body {
-        grid-template-columns: 1fr 2px 300px;
+        grid-template-columns: 1fr 2px 300px 2px auto;
     }
 
     #explorer-toggle {

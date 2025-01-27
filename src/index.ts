@@ -81,20 +81,18 @@ const handleDrag = (e: MouseEvent) => {
 
     const gridColumns = getComputedStyle(document.body).gridTemplateColumns.split(' ');
     
+    const totalWidth = document.body.clientWidth;
+    let newWidth;
+    
     if (currentSeparator.id === 'left-separator') {
-        const minWidth = 100; // Minimum width for sidebar
-        const newWidth = Math.max(minWidth, e.clientX);
+        newWidth = Math.max(0, e.clientX); // Ensure width is not negative
         gridColumns[0] = newWidth + 'px';
-        gridColumns[2] = '1fr'; // Ensure middle column takes remaining space
-        document.body.style.gridTemplateColumns = gridColumns.join(' ');
     } else if (currentSeparator.id === 'right-separator') {
-        const totalWidth = document.body.clientWidth;
-        const minWidth = 200; // Minimum width for preview
-        const newWidth = Math.max(minWidth, totalWidth - e.clientX);
-        gridColumns[2] = '1fr'; // Ensure middle column takes remaining space
+        newWidth = Math.max(0, totalWidth - e.clientX); // Ensure width is not negative
         gridColumns[4] = newWidth + 'px';
-        document.body.style.gridTemplateColumns = gridColumns.join(' ');
     }
+    gridColumns[2] = '1fr'; // Ensure middle column takes remaining space
+    document.body.style.gridTemplateColumns = gridColumns.join(' ');
 };
 
 if (explorerToggle && sidebar) {
@@ -120,3 +118,26 @@ if (rightSeparator) {
 
 window.addEventListener('mouseup', stopDragging);
 window.addEventListener('mousemove', handleDrag);
+
+// Handle orientation changes
+const orientationMediaQuery = window.matchMedia("(orientation: landscape)");
+
+function handleOrientationChange(e: MediaQueryListEvent | MediaQueryList) {
+    if (!sidebar) return;
+    
+    if (e.matches) {
+        // Landscape mode - show explorer
+        if (!sidebar.classList.contains("expanded")) {
+            sidebar.classList.add("expanded");
+            document.body.classList.add("sidebar-expanded");
+        }
+    } else {
+        // Portrait mode - hide explorer
+        sidebar.classList.remove("expanded");
+        document.body.classList.remove("sidebar-expanded");
+    }
+}
+
+// Initial check
+handleOrientationChange(orientationMediaQuery);
+orientationMediaQuery.addEventListener("change", handleOrientationChange);
