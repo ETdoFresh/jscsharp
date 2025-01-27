@@ -54,7 +54,7 @@ body {
 body:not(.settings-page) {
     display: grid;
     grid-template-rows: auto 1fr;
-    grid-template-columns: 60px minmax(auto, 400px) 4px 1fr 4px 300px;
+    grid-template-columns: 60px minmax(200px, 1fr) 4px minmax(200px, 2fr) 4px minmax(200px, 1fr);
     height: 100vh;
 }
 
@@ -216,11 +216,15 @@ body:not(.settings-page) {
 .editor-area {
     background-color: var(--editor-green);
     color: var(--text-primary);
+    overflow: hidden;
+    min-width: 0;
 }
 
 /* Split layout styles */
 .separator {
     background-color: var(--border-color);
+    cursor: col-resize;
+    user-select: none;
 }
 
 .separator:hover, .separator.dragging {

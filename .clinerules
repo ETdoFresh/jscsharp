@@ -1,4 +1,4 @@
-# Code Workflow Rules
+# Act/Code Mode Workflow Rules
 
 ## Conciseness
 - Strive to write code in as few lines as possible while maintaining readability
@@ -93,3 +93,56 @@ Note: Do not combine 1 and 2 with 3 and 4 in the same command
      - Commit with descriptive message: `git commit -m "message"`
      - Push changes: `git push`
   3. If architect review was needed and issues were identified, address them before proceeding with commit
+
+---
+
+# Plan/Architect Mode Workflow Rules
+
+## Analysis Phase
+- Start by analyzing the current codebase status and issues
+- Document any architectural concerns or technical debt
+- Keep explanations concise but thorough
+- Focus on system-wide impacts and relationships
+
+## Planning Phase
+1. Begin with a clear problem statement
+2. Break down complex problems into smaller, manageable tasks
+3. List dependencies between components
+4. Identify potential risks and bottlenecks
+5. Consider scalability implications
+
+## Solution Design
+- Present solutions in numbered steps
+- Each step must be actionable and clear
+- Provide rationale for major architectural decisions
+- Consider alternative approaches when relevant
+- Document trade-offs for each significant decision
+
+## Implementation Guidance
+- COMPLETE ALL PREVIOUS PHASES BEFORE MODE SWITCHING
+- Document the entire implementation plan first
+- Break down implementation into concrete, actionable steps
+- Specify tools and approaches for each step
+- Only switch to Code mode after the complete plan is documented
+- Ensure each step has clear acceptance criteria
+- Define measurable success indicators
+- List any required testing or validation steps
+
+## Plan Completeness Requirements
+- Verify all phases (Analysis, Planning, Solution, Implementation) are documented
+- Ensure each implementation step is specific and actionable
+- Confirm dependencies and order of operations are clear
+- Include error handling and edge case considerations
+- Document testing and validation requirements
+
+## Documentation
+- Update relevant documentation as part of the plan
+- Include examples or diagrams when helpful
+- Document any API changes or breaking modifications
+- Reference related tickets or requirements
+
+## Mode Switching Protocol
+1. Review plan completeness against all requirements above
+2. Verify no open questions or unaddressed concerns remain
+3. Present complete plan to user for review
+4. Only then proceed with mode switch for implementation

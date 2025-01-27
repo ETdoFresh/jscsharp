@@ -63,8 +63,13 @@ module.exports = {
       directory: path.join(__dirname, 'dist')
     },
     hot: true,
-    watchFiles: ['index.html', 'ast-viewer.html', 'settings.html', 'src/**/*.css'],
-    port: 8080
+    watchFiles: [
+      'src/**/*.ts',
+      'src/**/*.css',
+      '*.html'
+    ],
+    port: 8080,
+    liveReload: true
   },
   mode: 'development'
 };
