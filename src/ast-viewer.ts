@@ -2,27 +2,31 @@ import './styles.css';
 import { Editor } from './modules/editor';
 import { SplitLayout } from './modules/split-layout';
 import { TabbedView } from './modules/tabbed-view';
-import { Sidebar } from './modules/sidebar';
 import { initTheme } from './modules/theme-manager';
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize theme
     initTheme();
 
-    // Initialize sidebar with AST-specific content
-    const sidebar = new Sidebar('sidebar');
-    sidebar.setContent('ast-viewer', document.createElement('div'));
-
-    // Initialize split layout
-    const splitLayout = new SplitLayout('ast-container');
-    splitLayout.setSplitRatio(0.5); // 50/50 split
+    // Initialize the split layout with two panels - editor and AST view
+    const splitLayout = new SplitLayout('main-container', [
+        { id: 'editor', minRatio: 0.3, maxRatio: 0.7 },
+        { id: 'ast', minRatio: 0.3, maxRatio: 0.7 }
+    ]);
 
     // Initialize editor in left panel
     const editor = new Editor('ast-editor');
-    splitLayout.getLeftPanel().appendChild(editor.getElement());
+    const editorPanel = splitLayout.getPanel('editor');
+    if (editorPanel) {
+        editorPanel.appendChild(editor.getElement());
+    }
 
     // Initialize tabbed view in right panel
     const tabbedView = new TabbedView('ast-tabs');
+    const astPanel = splitLayout.getPanel('ast');
+    if (astPanel) {
+        astPanel.appendChild(tabbedView.getContainer());
+    }
 
     // Create JSON tab
     const jsonView = document.createElement('div');
@@ -55,8 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
         content: graphView
     });
 
-    splitLayout.getRightPanel().appendChild(tabbedView.getContainer());
-
     // Update AST when editor content changes
     editor.onChange((value) => {
         // Here you would parse the code and generate AST
@@ -75,8 +77,11 @@ document.addEventListener('DOMContentLoaded', () => {
         jsonView.textContent = JSON.stringify(ast, null, 2);
     });
 
+    // Set initial panel ratios (50/50 split)
+    splitLayout.setRatios([0.5, 0.5]);
+
     // Add split layout to page
-    const container = document.getElementById('ast-container');
+    const container = document.getElementById('main-container');
     if (container) {
         container.appendChild(splitLayout.getContainer());
     }

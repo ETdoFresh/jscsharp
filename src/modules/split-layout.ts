@@ -1,64 +1,101 @@
 interface SplitState {
-    ratio: number;
+    ratios: number[];
     lastX: number;
     containerWidth: number;
 }
 
+export interface SplitPanel {
+    id: string;
+    minRatio?: number;
+    maxRatio?: number;
+}
+
 export class SplitLayout {
     private container!: HTMLElement;
-    private leftPanel!: HTMLElement;
-    private rightPanel!: HTMLElement;
-    private separator!: HTMLElement;
+    private panels: HTMLElement[] = [];
+    private separators: HTMLElement[] = [];
     private state: SplitState = {
-        ratio: 0.5,
+        ratios: [],
         lastX: 0,
         containerWidth: 0
     };
-    private isDragging = false;
-    private animationFrameId: number | null = null;
+    private isDragging: number = -1; // Index of separator being dragged
+    private resizeObserver!: ResizeObserver;
     private disposed = false;
+    private panelConfigs: SplitPanel[] = [];
 
-    constructor(containerId: string) {
+    constructor(containerId: string, panels: SplitPanel[]) {
+        if (panels.length < 2) {
+            throw new Error('SplitLayout requires at least 2 panels');
+        }
+        this.panelConfigs = panels;
+        
+        // Initialize ratios evenly
+        const equalRatio = 1 / panels.length;
+        this.state.ratios = panels.map(() => equalRatio);
+        
+        // Load saved ratios if available
+        const savedRatios = localStorage.getItem(`splitLayoutRatios-${containerId}`);
+        if (savedRatios) {
+            try {
+                const parsed = JSON.parse(savedRatios);
+                if (Array.isArray(parsed) && parsed.length === panels.length) {
+                    this.state.ratios = parsed;
+                }
+            } catch (e) {
+                console.error('Failed to parse saved ratios:', e);
+            }
+        }
+
         this.createDOMStructure(containerId);
         this.setupEventListeners();
+        this.setupResizeObserver();
         this.updateLayout();
         
         // Initial layout update on next frame
         requestAnimationFrame(() => this.updateContainerWidth());
-        
-        // Handle window resizes
-        window.addEventListener('resize', this.handleResize);
     }
 
     private createDOMStructure(containerId: string) {
-        // Create elements
+        // Create container
         this.container = document.createElement('div');
         this.container.id = containerId;
-        this.leftPanel = document.createElement('div');
-        this.rightPanel = document.createElement('div');
-        this.separator = document.createElement('div');
-
-        // Set classes and ARIA attributes
         this.container.className = 'split-container';
-        this.leftPanel.className = 'split-panel left-panel';
-        this.rightPanel.className = 'split-panel right-panel';
-        this.separator.className = 'separator';
-        this.separator.setAttribute('role', 'separator');
-        this.separator.setAttribute('aria-valuenow', '50');
-        this.separator.setAttribute('aria-valuemin', '20');
-        this.separator.setAttribute('aria-valuemax', '80');
-        this.separator.setAttribute('tabindex', '0');
+        this.container.style.cssText = 'position:relative; width:100%; height:100%; overflow:hidden;';
 
-        // Add elements to container
-        this.container.appendChild(this.leftPanel);
-        this.container.appendChild(this.separator);
-        this.container.appendChild(this.rightPanel);
+        // Create panels and separators
+        this.panelConfigs.forEach((config, index) => {
+            // Create panel
+            const panel = document.createElement('div');
+            panel.className = `split-panel ${config.id}-panel`;
+            panel.style.cssText = 'position:absolute; top:0; height:100%; overflow:hidden;';
+            this.panels.push(panel);
+            this.container.appendChild(panel);
 
-        // Apply base styles
-        this.container.style.cssText = 'position:relative; display:flex; width:100%; height:100%; overflow:hidden;';
-        this.separator.style.cssText = 'position:absolute; width:4px; height:100%; cursor:col-resize; z-index:1;';
-        this.leftPanel.style.cssText = 'position:relative; overflow:hidden;';
-        this.rightPanel.style.cssText = 'position:relative; overflow:hidden;';
+            // Create separator (except after last panel)
+            if (index < this.panelConfigs.length - 1) {
+                const separator = document.createElement('div');
+                separator.className = 'separator';
+                separator.style.cssText = 'position:absolute; width:4px; height:100%; cursor:col-resize; background:#ccc; z-index:1;';
+                separator.setAttribute('role', 'separator');
+                separator.setAttribute('aria-valuenow', '50');
+                separator.setAttribute('aria-valuemin', '20');
+                separator.setAttribute('aria-valuemax', '80');
+                separator.setAttribute('tabindex', '0');
+                separator.dataset.index = index.toString();
+                
+                this.separators.push(separator);
+                this.container.appendChild(separator);
+            }
+        });
+    }
+
+    private setupResizeObserver() {
+        this.resizeObserver = new ResizeObserver((entries) => {
+            this.state.containerWidth = entries[0].contentRect.width;
+            this.updateLayout();
+        });
+        this.resizeObserver.observe(this.container);
     }
 
     private updateContainerWidth = () => {
@@ -71,113 +108,155 @@ export class SplitLayout {
 
     private updateLayout = () => {
         if (this.disposed || !this.state.containerWidth) return;
-
-        const percentage = this.state.ratio * 100;
-        const separatorOffset = this.state.containerWidth * this.state.ratio;
-
+        
+        let currentPosition = 0;
+        
         requestAnimationFrame(() => {
             if (this.disposed) return;
             
-            this.leftPanel.style.width = `${percentage}%`;
-            this.rightPanel.style.width = `${100 - percentage}%`;
-            this.separator.style.transform = `translateX(${separatorOffset}px)`;
-            this.separator.setAttribute('aria-valuenow', percentage.toString());
+            this.panels.forEach((panel, index) => {
+                const config = this.panelConfigs[index];
+                const minRatio = config.minRatio ?? 0.1;
+                const maxRatio = config.maxRatio ?? 0.8;
+                
+                // Calculate width based on ratio
+                const ratio = Math.min(maxRatio, Math.max(minRatio, this.state.ratios[index]));
+                const width = this.state.containerWidth * ratio;
+                
+                // Position panel
+                panel.style.left = `${currentPosition}px`;
+                panel.style.width = `${width}px`;
+                
+                // Position separator
+                if (index < this.separators.length) {
+                    const separator = this.separators[index];
+                    currentPosition += width;
+                    separator.style.left = `${currentPosition}px`;
+                    separator.setAttribute('aria-valuenow', Math.round(ratio * 100).toString());
+                    currentPosition += 4; // separator width
+                }
+            });
+            
+            // Save ratios
+            localStorage.setItem(`splitLayoutRatios-${this.container.id}`, JSON.stringify(this.state.ratios));
         });
-    };
-
-    private handleResize = () => {
-        if (this.disposed) return;
-        requestAnimationFrame(() => this.updateContainerWidth());
     };
 
     private handleMouseMove = (e: MouseEvent) => {
-        if (!this.isDragging || this.disposed) return;
-
-        // Cancel any pending frame
-        if (this.animationFrameId !== null) {
-            cancelAnimationFrame(this.animationFrameId);
-        }
-
-        this.animationFrameId = requestAnimationFrame(() => {
-            const containerRect = this.container.getBoundingClientRect();
-            const deltaX = e.clientX - this.state.lastX;
-            const deltaPct = deltaX / containerRect.width;
-            const newRatio = Math.min(0.8, Math.max(0.2, this.state.ratio + deltaPct));
-            
-            this.state.lastX = e.clientX;
-            this.state.ratio = newRatio;
+        if (this.isDragging === -1 || this.disposed) return;
+        
+        const containerRect = this.container.getBoundingClientRect();
+        const relativeX = e.clientX - containerRect.left;
+        
+        // Calculate new ratios based on separator position
+        const newRatios = [...this.state.ratios];
+        const totalWidth = containerRect.width;
+        const separatorIndex = this.isDragging;
+        
+        // Calculate the new position as a ratio of total width
+        const newRatio = relativeX / totalWidth;
+        
+        // Calculate the sum of ratios before this separator
+        const previousRatiosSum = newRatios.slice(0, separatorIndex).reduce((sum, r) => sum + r, 0);
+        
+        // Calculate how much this panel's ratio needs to change
+        const ratioDiff = newRatio - previousRatiosSum - newRatios[separatorIndex];
+        
+        // Adjust the ratios of the current and next panel
+        newRatios[separatorIndex] = Math.min(Math.max(this.panelConfigs[separatorIndex].minRatio ?? 0.1, 
+            newRatios[separatorIndex] + ratioDiff), 
+            this.panelConfigs[separatorIndex].maxRatio ?? 0.8);
+        
+        newRatios[separatorIndex + 1] = Math.min(Math.max(this.panelConfigs[separatorIndex + 1].minRatio ?? 0.1,
+            newRatios[separatorIndex + 1] - ratioDiff),
+            this.panelConfigs[separatorIndex + 1].maxRatio ?? 0.8);
+        
+        // Only update if ratios have changed
+        if (newRatios.some((r, i) => r !== this.state.ratios[i])) {
+            this.state.ratios = newRatios;
             this.updateLayout();
-        });
+        }
     };
 
     private handleMouseUp = () => {
-        if (this.isDragging) {
-            this.isDragging = false;
+        if (this.isDragging !== -1) {
+            this.isDragging = -1;
             document.body.style.cursor = '';
             document.body.style.userSelect = '';
-            this.separator.classList.remove('dragging');
-            
-            // Store final position
-            localStorage.setItem('splitLayoutRatio', this.state.ratio.toString());
+            this.separators.forEach(s => s.classList.remove('dragging'));
+            localStorage.setItem(`splitLayoutRatios-${this.container.id}`, JSON.stringify(this.state.ratios));
         }
     };
 
     private handleKeyDown = (e: KeyboardEvent) => {
         if (this.disposed) return;
 
+        const separatorIndex = parseInt((e.target as HTMLElement).dataset.index ?? '-1');
+        if (separatorIndex === -1) return;
+
         const step = e.shiftKey ? 0.1 : 0.01;
-        let newRatio = this.state.ratio;
+        const newRatios = [...this.state.ratios];
 
         switch (e.key) {
             case 'ArrowLeft':
-                newRatio = Math.max(0.2, this.state.ratio - step);
+                newRatios[separatorIndex] = Math.max(
+                    this.panelConfigs[separatorIndex].minRatio ?? 0.1, 
+                    newRatios[separatorIndex] - step
+                );
+                newRatios[separatorIndex + 1] += step;
                 break;
             case 'ArrowRight':
-                newRatio = Math.min(0.8, this.state.ratio + step);
+                newRatios[separatorIndex] = Math.min(
+                    this.panelConfigs[separatorIndex].maxRatio ?? 0.8, 
+                    newRatios[separatorIndex] + step
+                );
+                newRatios[separatorIndex + 1] -= step;
                 break;
             default:
                 return;
         }
 
-        e.preventDefault();
-        this.state.ratio = newRatio;
-        this.updateLayout();
-        localStorage.setItem('splitLayoutRatio', newRatio.toString());
+        if (newRatios.some((r, i) => r !== this.state.ratios[i])) {
+            e.preventDefault();
+            this.state.ratios = newRatios;
+            this.updateLayout();
+            localStorage.setItem(`splitLayoutRatios-${this.container.id}`, JSON.stringify(this.state.ratios));
+        }
     };
 
     private setupEventListeners() {
-        // Mouse events
-        this.separator.addEventListener('mousedown', (e: MouseEvent) => {
-            if (!this.disposed) {
-                this.isDragging = true;
-                this.state.lastX = e.clientX;
-                document.body.style.cursor = 'col-resize';
-                document.body.style.userSelect = 'none';
-                this.separator.classList.add('dragging');
-                e.preventDefault();
-            }
+        // Mouse events for each separator
+        this.separators.forEach((separator, index) => {
+            separator.addEventListener('mousedown', (e: MouseEvent) => {
+                if (!this.disposed) {
+                    this.isDragging = index;
+                    document.body.style.cursor = 'col-resize';
+                    document.body.style.userSelect = 'none';
+                    separator.classList.add('dragging');
+                    e.preventDefault();
+                }
+            });
+
+            // Keyboard events
+            separator.addEventListener('keydown', this.handleKeyDown);
+
+            // Touch events
+            separator.addEventListener('touchstart', (e) => {
+                if (!this.disposed) {
+                    this.isDragging = index;
+                    separator.classList.add('dragging');
+                    document.body.style.userSelect = 'none';
+                    e.preventDefault();
+                }
+            });
         });
 
         document.addEventListener('mousemove', this.handleMouseMove);
         document.addEventListener('mouseup', this.handleMouseUp);
 
-        // Keyboard events
-        this.separator.addEventListener('keydown', this.handleKeyDown);
-
         // Touch events
-        this.separator.addEventListener('touchstart', (e) => {
-            if (!this.disposed) {
-                this.isDragging = true;
-                const touch = e.touches[0];
-                this.state.lastX = touch.clientX;
-                this.separator.classList.add('dragging');
-                document.body.style.userSelect = 'none';
-                e.preventDefault();
-            }
-        });
-
-        this.separator.addEventListener('touchmove', (e) => {
-            if (!this.isDragging || this.disposed) return;
+        document.addEventListener('touchmove', (e) => {
+            if (this.isDragging === -1 || this.disposed) return;
             const touch = e.touches[0];
             const event = new MouseEvent('mousemove', {
                 clientX: touch.clientX,
@@ -187,36 +266,32 @@ export class SplitLayout {
             e.preventDefault();
         });
 
-        this.separator.addEventListener('touchend', () => {
+        document.addEventListener('touchend', () => {
             this.handleMouseUp();
         });
     }
 
     public dispose() {
         this.disposed = true;
-        if (this.animationFrameId !== null) {
-            cancelAnimationFrame(this.animationFrameId);
-        }
+        this.resizeObserver.disconnect();
         document.removeEventListener('mousemove', this.handleMouseMove);
         document.removeEventListener('mouseup', this.handleMouseUp);
-        window.removeEventListener('resize', this.handleResize);
     }
 
     public getContainer(): HTMLElement {
         return this.container;
     }
 
-    public getLeftPanel(): HTMLElement {
-        return this.leftPanel;
+    public getPanel(id: string): HTMLElement | undefined {
+        const index = this.panelConfigs.findIndex(p => p.id === id);
+        return index !== -1 ? this.panels[index] : undefined;
     }
 
-    public getRightPanel(): HTMLElement {
-        return this.rightPanel;
-    }
-
-    // Set split ratio (0-1)
-    public setSplitRatio(ratio: number) {
-        this.state.ratio = Math.min(Math.max(ratio, 0.2), 0.8);
+    public setRatios(ratios: number[]) {
+        if (ratios.length !== this.panelConfigs.length) {
+            throw new Error('Number of ratios must match number of panels');
+        }
+        this.state.ratios = ratios;
         this.updateLayout();
     }
 }
