@@ -85,6 +85,7 @@ const handleDrag = (e: MouseEvent) => {
         const minWidth = 100; // Minimum width for sidebar
         const newWidth = Math.max(minWidth, e.clientX);
         gridColumns[0] = newWidth + 'px';
+        gridColumns[2] = '1fr'; // Ensure middle column takes remaining space
         document.body.style.gridTemplateColumns = gridColumns.join(' ');
     } else if (currentSeparator.id === 'right-separator') {
         const totalWidth = document.body.clientWidth;
