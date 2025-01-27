@@ -37,6 +37,18 @@ export class Sidebar {
         this.toggle.addEventListener('click', () => {
             this.isCollapsed = !this.isCollapsed;
             this.updateLayout();
+            
+            // Force content redraw when expanding
+            if (!this.isCollapsed) {
+                requestAnimationFrame(() => {
+                    const content = this.container.querySelector('.explorer-content') as HTMLElement;
+                    if (content) {
+                        content.style.display = 'none';
+                        content.offsetHeight; // Force reflow
+                        content.style.display = '';
+                    }
+                });
+            }
         });
 
         const orientationMediaQuery = window.matchMedia('(orientation: landscape)');
@@ -44,15 +56,23 @@ export class Sidebar {
             const newOrientation = e.matches ? 'landscape' : 'portrait';
             if (newOrientation !== this.currentOrientation) {
                 this.currentOrientation = newOrientation;
-                // Collapse sidebar when switching to portrait mode
-                if (newOrientation === 'portrait') {
-                    this.isCollapsed = true;
-                }
+                
+                // Don't automatically collapse in portrait mode
+                // Let user control visibility explicitly
                 this.updateLayout();
+                
+                // Force content redraw on orientation change
+                requestAnimationFrame(() => {
+                    const content = this.container.querySelector('.explorer-content') as HTMLElement;
+                    if (content) {
+                        content.style.display = 'none';
+                        content.offsetHeight; // Force reflow
+                        content.style.display = '';
+                    }
+                });
             }
         });
     }
-
     private updateLayout() {
         // Update sidebar classes
         this.container.classList.toggle('collapsed', this.isCollapsed);
@@ -71,10 +91,31 @@ export class Sidebar {
             document.body.style.gridTemplateColumns = this.isCollapsed
                 ? '60px 0 4px 1fr 4px 300px'
                 : '60px 200px 4px 1fr 4px 300px';
+            
+            // Reset any portrait-specific styles
+            this.container.style.position = '';
+            this.container.style.top = '';
+            this.container.style.left = '';
+            this.container.style.height = '';
+            this.container.style.width = '';
+            this.container.style.zIndex = '';
+            this.container.style.transform = '';
         } else {
             // Portrait mode - sidebars are fixed
             document.body.style.gridTemplateColumns = '60px 0 4px 1fr 4px 300px';
-            this.container.style.width = this.isCollapsed ? '0' : '200px';
+            
+            // Set portrait-specific styles
+            this.container.style.position = 'fixed';
+            this.container.style.top = '50px';
+            this.container.style.left = '0';
+            this.container.style.height = 'calc(100vh - 50px)';
+            this.container.style.width = '100vw';
+            this.container.style.zIndex = '1000';
+            
+            // Use transform for smooth animation instead of width
+            this.container.style.transform = this.isCollapsed
+                ? 'translateX(-100%)'
+                : 'translateX(0)';
         }
     }
 

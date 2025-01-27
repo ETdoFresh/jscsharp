@@ -21,13 +21,30 @@
 - Document trade-offs for each significant decision
 
 ## Implementation Guidance
-- After laying out the complete plan, switch to Code mode for implementation
+- COMPLETE ALL PREVIOUS PHASES BEFORE MODE SWITCHING
+- Document the entire implementation plan first
+- Break down implementation into concrete, actionable steps
+- Specify tools and approaches for each step
+- Only switch to Code mode after the complete plan is documented
 - Ensure each step has clear acceptance criteria
 - Define measurable success indicators
 - List any required testing or validation steps
+
+## Plan Completeness Requirements
+- Verify all phases (Analysis, Planning, Solution, Implementation) are documented
+- Ensure each implementation step is specific and actionable
+- Confirm dependencies and order of operations are clear
+- Include error handling and edge case considerations
+- Document testing and validation requirements
 
 ## Documentation
 - Update relevant documentation as part of the plan
 - Include examples or diagrams when helpful
 - Document any API changes or breaking modifications
 - Reference related tickets or requirements
+
+## Mode Switching Protocol
+1. Review plan completeness against all requirements above
+2. Verify no open questions or unaddressed concerns remain
+3. Present complete plan to user for review
+4. Only then proceed with mode switch for implementation
