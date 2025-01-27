@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <li>folder1/file3.cs</li>
         </ul>
     `;
-    sidebar.setContent(explorerContent);
+    sidebar.setContent('explorer', explorerContent);
 
     // Get the original elements
     const editorArea = document.getElementById('editor-area');

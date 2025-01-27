@@ -1,4 +1,4 @@
-L# Project Plan: Web-Based C# Editor
+# Project Plan: Web-Based C# Editor
 
 **Phase 1: UI Foundation - Detailed Steps**
 
@@ -44,3 +44,30 @@ L# Project Plan: Web-Based C# Editor
 *   Implement C# to JavaScript transpilation.
 *   Set up a runtime environment in the browser to execute the transpiled code.
 *   Integrate with browser APIs and potentially external C# libraries (if feasible).
+
+## Context-Dependent Sidebar and Left Bar
+
+The content of the sidebar and left bar is context-dependent, changing based on the currently viewed HTML page.
+
+- **editor/index.html:** This page displays the code editor and includes the file explorer in the sidebar to navigate project files.
+- **ast-viewer.html:**  This page is for viewing the Abstract Syntax Tree (AST) and the sidebar content will be specific to AST visualization, not including the file explorer.
+- **settings.html:** This page is dedicated to application settings. The sidebar here will contain settings-related navigation or options, and will not include the file explorer.
+
+This context-dependent behavior helps to keep the UI focused and relevant to the current task.
+
+### Implementation Details
+
+- **Sidebar Component (`src/modules/sidebar.ts`):**
+    - The `Sidebar` class was modified to include a `setContent(contentType: string, content: HTMLElement)` method.
+    - The `setContent` method uses a `switch` statement based on the `contentType` to call different content creation functions:
+        - `createFileExplorerContent()`: Generates content for the file explorer sidebar (used in `index.html`).
+        - `createAstViewerContent()`: Generates content for the AST viewer sidebar (used in `ast-viewer.html`).
+        - `createSettingsContent()`: Generates content for the settings sidebar (used in `settings.html`).
+    - Currently, these content creation functions are placeholders, but they provide a structure for adding specific content in the future.
+
+- **Page-Specific Initialization (`src/index.ts`, `src/ast-viewer.ts`, `src/settings.ts`):**
+    - In each page's entry point file, the `Sidebar` class is initialized.
+    - The `sidebar.setContent()` method is called with the appropriate `contentType` string to set the sidebar content based on the page.
+    - For example, in `src/index.ts`, `sidebar.setContent('explorer', explorerContent)` is used to set the file explorer sidebar.
+
+This implementation provides a modular and scalable approach to manage context-dependent sidebar content, making it easy to add or modify sidebar content for different pages in the future.

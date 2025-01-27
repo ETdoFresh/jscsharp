@@ -2,8 +2,13 @@ import './styles.css';
 import { Editor } from './modules/editor';
 import { SplitLayout } from './modules/split-layout';
 import { TabbedView } from './modules/tabbed-view';
+import { Sidebar } from './modules/sidebar';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize sidebar with AST-specific content
+    const sidebar = new Sidebar('sidebar');
+    sidebar.setContent('ast-viewer', document.createElement('div'));
+
     // Initialize split layout
     const splitLayout = new SplitLayout('ast-container');
     splitLayout.setSplitRatio(0.5); // 50/50 split

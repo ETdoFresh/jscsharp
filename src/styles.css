@@ -130,6 +130,74 @@ body {
     box-sizing: border-box;
 }
 
+/* Explorer toolbar */
+.explorer-toolbar {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 10px;
+    padding: 4px 0;
+}
+
+.explorer-toolbar button {
+    padding: 4px 8px;
+    background: transparent;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.explorer-toolbar button:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+/* Explorer tree */
+.explorer-tree {
+    font-size: 13px;
+}
+
+.explorer-tree ul {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 0 16px;
+}
+
+.explorer-tree > ul {
+    margin-left: 0;
+}
+
+.explorer-tree li {
+    padding: 2px 0;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.explorer-tree .folder > ul {
+    display: none;
+}
+
+.explorer-tree .folder.expanded > ul {
+    display: block;
+}
+
+.explorer-tree .folder-name {
+    cursor: pointer;
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+.explorer-tree .folder-name:hover,
+.explorer-tree .file:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.explorer-tree .file {
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
 .explorer-content h3 {
     margin: 10px 0;
     overflow: hidden;
@@ -172,6 +240,66 @@ body {
     width: 32px;
     text-align: center;
     padding: 4px;
+}
+
+/* AST Viewer sidebar styles */
+.ast-controls {
+    padding: 10px;
+}
+
+.control-group {
+    margin-bottom: 20px;
+}
+
+.control-group h4 {
+    margin: 0 0 10px 0;
+    font-size: 14px;
+    color: #666;
+}
+
+.ast-controls label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.ast-controls button {
+    margin-right: 8px;
+    padding: 6px 12px;
+    background: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.ast-controls button:hover {
+    background: #e0e0e0;
+}
+
+/* Settings sidebar styles */
+.settings-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.settings-nav li {
+    padding: 10px 15px;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.settings-nav li:hover {
+    background-color: #f0f0f0;
+}
+
+.settings-nav li.active {
+    background-color: #e8e8e8;
+    border-left-color: #0078d4;
+    font-weight: 500;
 }
 
 /* Editor styles */
@@ -271,4 +399,43 @@ body {
         margin-left: 60px;
         width: calc(100% - 60px);
     }
+}
+
+/* Settings page styles */
+#settings-container {
+    grid-row: 2;
+    grid-column: 4;
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: #fff;
+    height: 100%;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
+.settings-section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #f8f9fa;
+}
+
+.settings-section h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #333;
+    font-size: 16px;
+}
+
+.settings-section label {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.settings-section select,
+.settings-section input[type="checkbox"] {
+    margin-left: 10px;
 }

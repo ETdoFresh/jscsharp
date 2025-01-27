@@ -4,7 +4,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 module.exports = {
   entry: {
     index: './src/index.ts',
-    astViewer: './src/ast-viewer.ts'
+    astViewer: './src/ast-viewer.ts',
+    settings: './src/settings.ts'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
@@ -41,7 +42,7 @@ module.exports = {
     new HtmlWebpackPlugin({
         template: 'settings.html',
         filename: 'settings.html',
-        chunks: ['index']
+        chunks: ['settings']
     })
   ],
   devServer: {
