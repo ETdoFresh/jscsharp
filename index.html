@@ -6,6 +6,12 @@
     <title>Web C# Editor</title>
 </head>
 <body>
+    <div id="tab-bar">
+        <button aria-label="Editor" class="tab-button active" data-tab="editor">✏️</button>
+        <button aria-label="AST Viewer" class="tab-button" data-tab="ast" onclick="window.location.href='ast-viewer.html'">🔎</button>
+        <button aria-label="Settings" class="tab-button" data-tab="settings" onclick="window.location.href='settings.html'">⚙️</button>
+    </div>
+
     <button id="explorer-toggle" aria-label="Toggle Explorer"><span class="icon">📁</span></button>
     <div id="sidebar">
         <h3>EXPLORER</h3>

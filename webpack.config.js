@@ -25,17 +25,31 @@ module.exports = {
     extensions: ['.ts', '.js']
   },
   plugins: [
-    new HtmlWebpackPlugin({
-      template: 'index.html',
-      inject: true
-    })
+      new HtmlWebpackPlugin({
+          template: 'index.html',
+          filename: 'index.html',
+          chunks: ['main'],
+          inject: true
+      }),
+      new HtmlWebpackPlugin({
+          template: 'ast-viewer.html',
+          filename: 'ast-viewer.html',
+          chunks: ['main'],
+          inject: true
+      }),
+      new HtmlWebpackPlugin({
+          template: 'settings.html',
+          filename: 'settings.html',
+          chunks: ['main'],
+          inject: true
+      })
   ],
   devServer: {
     static: {
       directory: path.join(__dirname, 'dist')
     },
     hot: true,
-    watchFiles: ['index.html', 'src/**/*.css'],
+    watchFiles: ['index.html', 'ast-viewer.html', 'settings.html', 'src/**/*.css'],
     port: 8080
   },
   mode: 'development'

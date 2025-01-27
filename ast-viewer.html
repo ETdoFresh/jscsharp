@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AST Viewer - Web C# Editor</title>
+</head>
+<body>
+    <div id="tab-bar">
+        <button aria-label="Editor" class="tab-button" data-tab="editor" onclick="window.location.href='index.html'">✏️</button>
+        <button aria-label="AST Viewer" class="tab-button active" data-tab="ast">🔎</button>
+        <button aria-label="Settings" class="tab-button" data-tab="settings" onclick="window.location.href='settings.html'">⚙️</button>
+    </div>
+
+    <div id="ast-container">
+        <h2>Abstract Syntax Tree Viewer</h2>
+        <div id="ast-view">
+            <p>AST visualization will appear here</p>
+        </div>
+    </div>
+</body>
+</html>
