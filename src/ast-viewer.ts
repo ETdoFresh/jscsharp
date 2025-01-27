@@ -3,8 +3,12 @@ import { Editor } from './modules/editor';
 import { SplitLayout } from './modules/split-layout';
 import { TabbedView } from './modules/tabbed-view';
 import { Sidebar } from './modules/sidebar';
+import { initTheme } from './modules/theme-manager';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize theme
+    initTheme();
+
     // Initialize sidebar with AST-specific content
     const sidebar = new Sidebar('sidebar');
     sidebar.setContent('ast-viewer', document.createElement('div'));

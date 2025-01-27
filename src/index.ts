@@ -1,8 +1,12 @@
 import './styles.css';
 import { Editor } from './modules/editor';
 import { Sidebar } from './modules/sidebar';
+import { initTheme } from './modules/theme-manager';
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize theme
+    initTheme();
+
     // Initialize editor
     const editor = new Editor('editor-area');
     const preview = document.getElementById('preview-area');

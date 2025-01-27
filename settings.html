@@ -4,13 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Settings - C# Web Editor</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
-    <!-- Fixed sidebar for icons/navigation -->
-    <div id="fixed-sidebar"></div>
-
-    <!-- Main sidebar for settings navigation -->
-    <div id="sidebar"></div>
+    <!-- Top navigation bar -->
+    <div id="tab-bar">
+        <a href="index.html" class="tab-button" title="Editor" style="padding: 8px 16px; margin: 0 4px; border: none; background: none; cursor: pointer; font-size: 18px; border-radius: 4px; transition: background-color 0.2s; color: var(--text-primary); text-decoration: none;">
+            ✏️
+        </a>
+        <a href="ast-viewer.html" class="tab-button" title="AST Viewer" style="padding: 8px 16px; margin: 0 4px; border: none; background: none; cursor: pointer; font-size: 18px; border-radius: 4px; transition: background-color 0.2s; color: var(--text-primary); text-decoration: none;">
+            🔎
+        </a>
+        <a href="settings.html" class="tab-button active" title="Settings" style="padding: 8px 16px; margin: 0 4px; border: none; background: none; cursor: pointer; font-size: 18px; border-radius: 4px; transition: background-color 0.2s; color: var(--text-primary); background-color: var(--bg-active); text-decoration: none;">
+            ⚙️
+        </a>
+    </div>
 
     <!-- Main content area -->
     <div id="settings-content"></div>

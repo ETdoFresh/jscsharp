@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack');
 
 module.exports = {
   entry: {
@@ -16,7 +17,18 @@ module.exports = {
     rules: [
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        use: [
+          {
+            loader: 'style-loader',
+            options: {
+              injectType: 'singletonStyleTag',
+              attributes: {
+                'data-hot': true
+              }
+            }
+          },
+          'css-loader'
+        ]
       },
       {
         test: /\.ts$/,
@@ -29,6 +41,7 @@ module.exports = {
     extensions: ['.ts', '.js']
   },
   plugins: [
+    new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
         template: 'index.html',
         filename: 'index.html',
