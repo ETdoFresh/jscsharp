@@ -1,113 +1,109 @@
 export class Sidebar {
     private container: HTMLElement;
+    private fixedSidebar: HTMLElement;
     private toggle: HTMLButtonElement;
     private currentOrientation: 'portrait' | 'landscape';
-    private lastLandscapeExpandedState: boolean;
+    private isCollapsed: boolean;
 
     constructor(containerId: string) {
+        // Create fixed sidebar
+        this.fixedSidebar = document.createElement('div');
+        this.fixedSidebar.id = 'fixed-sidebar';
+        document.body.appendChild(this.fixedSidebar);
+
+        // Create toggle button in fixed sidebar
+        this.toggle = document.createElement('button');
+        this.toggle.setAttribute('aria-label', 'Toggle Explorer');
+        this.toggle.innerHTML = '<span class="icon">📁</span>';
+        this.fixedSidebar.appendChild(this.toggle);
+
+        // Setup file explorer sidebar
         const existingContainer = document.getElementById(containerId);
         if (existingContainer) {
             this.container = existingContainer;
         } else {
             this.container = document.createElement('div');
             this.container.id = containerId;
-        }
-        
-        const existingToggle = document.getElementById(`${containerId}-toggle`);
-        if (existingToggle instanceof HTMLButtonElement) {
-            this.toggle = existingToggle;
-        } else {
-            this.toggle = document.createElement('button');
-            this.toggle.id = `${containerId}-toggle`;
-            this.toggle.className = 'sidebar-toggle';
-            this.toggle.setAttribute('aria-label', 'Toggle Explorer');
-            this.toggle.innerHTML = '<span class="icon">📁</span>';
-            document.body.appendChild(this.toggle);
+            document.body.appendChild(this.container);
         }
 
         this.currentOrientation = window.matchMedia('(orientation: landscape)').matches ? 'landscape' : 'portrait';
-        this.lastLandscapeExpandedState = true; // Default to expanded in landscape
-        
-        const startExpanded = (this.currentOrientation === 'landscape') ? this.lastLandscapeExpandedState : false;
+        this.isCollapsed = false;
         this.setupEventListeners();
-        this.updateLayout(startExpanded);
+        this.updateLayout();
     }
 
     private setupEventListeners() {
         this.toggle.addEventListener('click', () => {
-            const isCurrentlyExpanded = this.container.classList.contains('expanded');
-            const newExpanded = !isCurrentlyExpanded;
-
-            if (this.currentOrientation === 'landscape') {
-                this.lastLandscapeExpandedState = newExpanded;
-            }
-
-            this.updateLayout(newExpanded);
+            this.isCollapsed = !this.isCollapsed;
+            this.updateLayout();
         });
 
         const orientationMediaQuery = window.matchMedia('(orientation: landscape)');
         orientationMediaQuery.addEventListener('change', (e) => {
             const newOrientation = e.matches ? 'landscape' : 'portrait';
-
             if (newOrientation !== this.currentOrientation) {
                 this.currentOrientation = newOrientation;
-                
-                // In portrait mode, always collapse
-                // In landscape, restore the last user preference
-                const newExpanded = (newOrientation === 'landscape') 
-                    ? this.lastLandscapeExpandedState 
-                    : false;
-
-                this.updateLayout(newExpanded);
+                // Collapse sidebar when switching to portrait mode
+                if (newOrientation === 'portrait') {
+                    this.isCollapsed = true;
+                }
+                this.updateLayout();
             }
         });
     }
 
-    private updateLayout(isExpanded: boolean) {
-        // Update classes
-        this.container.classList.toggle('expanded', isExpanded);
-        document.body.classList.toggle('sidebar-expanded', isExpanded);
+    private updateLayout() {
+        // Update sidebar classes
+        this.container.classList.toggle('collapsed', this.isCollapsed);
 
         // Update toggle icon
         const icon = this.toggle.querySelector('.icon');
         if (icon) {
-            icon.textContent = isExpanded ? '⬅️' : '📁';
+            icon.textContent = this.isCollapsed ? '📁' : '⬅️';
         }
 
-        if (this.currentOrientation === 'landscape') {
-            // In landscape mode, sidebar is part of the grid
-            document.body.style.gridTemplateColumns = isExpanded 
-                ? '200px 4px 1fr 4px 300px'
-                : '48px 4px 1fr 4px 300px'; // Keep small width for toggle button
+        // Always show fixed sidebar
+        this.fixedSidebar.style.display = 'block';
 
-            // Always show in landscape (either full or collapsed)
-            this.container.style.display = 'block';
-            this.container.style.position = 'static';
-            this.container.style.width = isExpanded ? '200px' : '48px';
+        if (this.currentOrientation === 'landscape') {
+            // Landscape mode - both sidebars are part of the grid
+            document.body.style.gridTemplateColumns = this.isCollapsed
+                ? '60px 0 4px 1fr 4px 300px'
+                : '60px 200px 4px 1fr 4px 300px';
         } else {
-            // Portrait mode - overlay style
-            document.body.style.gridTemplateColumns = '48px 4px 1fr 4px 300px';
-            
-            if (isExpanded) {
-                this.container.style.display = 'block';
-                this.container.style.position = 'fixed';
-                this.container.style.width = '100%';
-            } else {
-                this.container.style.display = 'none';
-            }
+            // Portrait mode - sidebars are fixed
+            document.body.style.gridTemplateColumns = '60px 0 4px 1fr 4px 300px';
+            this.container.style.width = this.isCollapsed ? '0' : '200px';
         }
     }
 
     public setContent(content: HTMLElement) {
+        // Clear existing content
         this.container.innerHTML = '';
-        this.container.appendChild(content);
+        
+        // Create explorer content wrapper
+        const explorerContent = document.createElement('div');
+        explorerContent.className = 'explorer-content';
+        explorerContent.appendChild(content);
+        
+        // Add to file explorer sidebar
+        this.container.appendChild(explorerContent);
     }
 
     public getContainer(): HTMLElement {
         return this.container;
     }
 
+    public getFixedSidebar(): HTMLElement {
+        return this.fixedSidebar;
+    }
+
     public getToggleButton(): HTMLButtonElement {
         return this.toggle;
+    }
+
+    public isExplorerCollapsed(): boolean {
+        return this.isCollapsed;
     }
 }

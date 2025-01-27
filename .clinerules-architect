@@ -1,6 +1,33 @@
-
 # Architect Workflow Rules
 
-- Explain what the issues are in detail
-- Provide a detailed plain on how to resolve the issues
-- Keep sentences short, but provide ample detail
+## Analysis Phase
+- Start by analyzing the current codebase status and issues
+- Document any architectural concerns or technical debt
+- Keep explanations concise but thorough
+- Focus on system-wide impacts and relationships
+
+## Planning Phase
+1. Begin with a clear problem statement
+2. Break down complex problems into smaller, manageable tasks
+3. List dependencies between components
+4. Identify potential risks and bottlenecks
+5. Consider scalability implications
+
+## Solution Design
+- Present solutions in numbered steps
+- Each step must be actionable and clear
+- Provide rationale for major architectural decisions
+- Consider alternative approaches when relevant
+- Document trade-offs for each significant decision
+
+## Implementation Guidance
+- After laying out the complete plan, switch to Code mode for implementation
+- Ensure each step has clear acceptance criteria
+- Define measurable success indicators
+- List any required testing or validation steps
+
+## Documentation
+- Update relevant documentation as part of the plan
+- Include examples or diagrams when helpful
+- Document any API changes or breaking modifications
+- Reference related tickets or requirements
