@@ -2,10 +2,13 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: {
+    index: './src/index.ts',
+    astViewer: './src/ast-viewer.ts'
+  },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js',
+    filename: '[name].bundle.js',
     clean: true
   },
   module: {
@@ -25,24 +28,21 @@ module.exports = {
     extensions: ['.ts', '.js']
   },
   plugins: [
-      new HtmlWebpackPlugin({
-          template: 'index.html',
-          filename: 'index.html',
-          chunks: ['main'],
-          inject: true
-      }),
-      new HtmlWebpackPlugin({
-          template: 'ast-viewer.html',
-          filename: 'ast-viewer.html',
-          chunks: ['main'],
-          inject: true
-      }),
-      new HtmlWebpackPlugin({
-          template: 'settings.html',
-          filename: 'settings.html',
-          chunks: ['main'],
-          inject: true
-      })
+    new HtmlWebpackPlugin({
+        template: 'index.html',
+        filename: 'index.html',
+        chunks: ['index']
+    }),
+    new HtmlWebpackPlugin({
+        template: 'ast-viewer.html',
+        filename: 'ast-viewer.html',
+        chunks: ['astViewer']
+    }),
+    new HtmlWebpackPlugin({
+        template: 'settings.html',
+        filename: 'settings.html',
+        chunks: ['index']
+    })
   ],
   devServer: {
     static: {
