@@ -61,14 +61,14 @@ export class SplitLayout {
         this.container = document.createElement('div');
         this.container.id = containerId;
         this.container.className = 'split-container';
-        this.container.style.cssText = 'position:relative; width:100%; height:100%; overflow:hidden;';
+        this.container.style.cssText = 'display:flex; flex-direction:row; width:100%; height:100%; overflow:hidden; position:relative;';
 
         // Create panels and separators
         this.panelConfigs.forEach((config, index) => {
             // Create panel
             const panel = document.createElement('div');
             panel.className = `split-panel ${config.id}-panel`;
-            panel.style.cssText = 'position:absolute; top:0; height:100%; overflow:hidden;';
+            panel.style.cssText = 'height:100%; overflow:hidden; min-width:0; flex-shrink:0; position:relative;';
             this.panels.push(panel);
             this.container.appendChild(panel);
 
@@ -76,7 +76,7 @@ export class SplitLayout {
             if (index < this.panelConfigs.length - 1) {
                 const separator = document.createElement('div');
                 separator.className = 'separator';
-                separator.style.cssText = 'position:absolute; width:4px; height:100%; cursor:col-resize; background:#ccc; z-index:1;';
+                separator.style.cssText = 'width:4px; height:100%; cursor:col-resize; background:var(--border-color); z-index:10; touch-action:none; user-select:none; -webkit-user-select:none; flex-shrink:0; position:relative;';
                 separator.setAttribute('role', 'separator');
                 separator.setAttribute('aria-valuenow', '50');
                 separator.setAttribute('aria-valuemin', '20');
@@ -121,19 +121,15 @@ export class SplitLayout {
                 
                 // Calculate width based on ratio
                 const ratio = Math.min(maxRatio, Math.max(minRatio, this.state.ratios[index]));
-                const width = this.state.containerWidth * ratio;
+                const width = Math.max(0, this.state.containerWidth * ratio);
                 
-                // Position panel
-                panel.style.left = `${currentPosition}px`;
+                // Update panel width
                 panel.style.width = `${width}px`;
                 
-                // Position separator
+                // Update separator aria attributes
                 if (index < this.separators.length) {
                     const separator = this.separators[index];
-                    currentPosition += width;
-                    separator.style.left = `${currentPosition}px`;
                     separator.setAttribute('aria-valuenow', Math.round(ratio * 100).toString());
-                    currentPosition += 4; // separator width
                 }
             });
             
@@ -159,16 +155,18 @@ export class SplitLayout {
         // Calculate the sum of ratios before this separator
         const previousRatiosSum = newRatios.slice(0, separatorIndex).reduce((sum, r) => sum + r, 0);
         
-        // Calculate how much this panel's ratio needs to change
-        const ratioDiff = newRatio - previousRatiosSum - newRatios[separatorIndex];
+        // Calculate the direct ratio difference from current position
+        const ratioDiff = newRatio - previousRatiosSum;
         
-        // Adjust the ratios of the current and next panel
-        newRatios[separatorIndex] = Math.min(Math.max(this.panelConfigs[separatorIndex].minRatio ?? 0.1, 
-            newRatios[separatorIndex] + ratioDiff), 
+        // Set the current panel's ratio directly based on the mouse position
+        newRatios[separatorIndex] = Math.min(Math.max(this.panelConfigs[separatorIndex].minRatio ?? 0.1,
+            ratioDiff),
             this.panelConfigs[separatorIndex].maxRatio ?? 0.8);
         
+        // Adjust the next panel to maintain the same total width
+        const remainingRatio = 1 - previousRatiosSum - newRatios[separatorIndex];
         newRatios[separatorIndex + 1] = Math.min(Math.max(this.panelConfigs[separatorIndex + 1].minRatio ?? 0.1,
-            newRatios[separatorIndex + 1] - ratioDiff),
+            remainingRatio),
             this.panelConfigs[separatorIndex + 1].maxRatio ?? 0.8);
         
         // Only update if ratios have changed
@@ -258,13 +256,18 @@ export class SplitLayout {
         document.addEventListener('touchmove', (e) => {
             if (this.isDragging === -1 || this.disposed) return;
             const touch = e.touches[0];
+            const containerRect = this.container.getBoundingClientRect();
+            if (touch.clientX < containerRect.left || touch.clientX > containerRect.right) return;
+            
             const event = new MouseEvent('mousemove', {
                 clientX: touch.clientX,
-                clientY: touch.clientY
+                clientY: touch.clientY,
+                bubbles: true,
+                cancelable: true
             });
             this.handleMouseMove(event);
             e.preventDefault();
-        });
+        }, { passive: false });
 
         document.addEventListener('touchend', () => {
             this.handleMouseUp();
