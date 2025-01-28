@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Web C# Editor</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="index.bundle.js" defer></script>
 </head>
-<body>
+<body class="editor-page">
     <div id="tab-bar">
         <button aria-label="Editor" class="tab-button active" data-tab="editor">✏️</button>
         <button aria-label="AST Viewer" class="tab-button" data-tab="ast" onclick="window.location.href='ast-viewer.html'">🔎</button>
         <button aria-label="Settings" class="tab-button" data-tab="settings" onclick="window.location.href='settings.html'">⚙️</button>
+    </div>
+
+    <div id="fixed-sidebar">
+        <button aria-label="Explorer" title="Explorer">📁</button>
+        <button aria-label="Search" title="Search">🔍</button>
+        <button aria-label="Settings" title="Settings">⚙️</button>
     </div>
 
     <div id="main-container"></div>
