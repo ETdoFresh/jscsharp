@@ -1,7 +1,7 @@
 export class Sidebar {
     private container: HTMLElement;
     private fixedSidebar: HTMLElement;
-    private toggle: HTMLButtonElement;
+    private explorerButton: HTMLButtonElement;
     private currentOrientation: 'portrait' | 'landscape';
     private isCollapsed: boolean;
 
@@ -11,11 +11,25 @@ export class Sidebar {
         this.fixedSidebar.id = 'fixed-sidebar';
         document.body.appendChild(this.fixedSidebar);
 
-        // Create toggle button in fixed sidebar
-        this.toggle = document.createElement('button');
-        this.toggle.setAttribute('aria-label', 'Toggle Explorer');
-        this.toggle.innerHTML = '<span class="icon">📁</span>';
-        this.fixedSidebar.appendChild(this.toggle);
+        // Create explorer button
+        this.explorerButton = document.createElement('button');
+        this.explorerButton.setAttribute('aria-label', 'Explorer');
+        this.explorerButton.setAttribute('title', 'Explorer');
+        this.explorerButton.innerHTML = '📁';
+        this.fixedSidebar.appendChild(this.explorerButton);
+
+        // Create search button
+        const searchButton = document.createElement('button');
+        searchButton.setAttribute('aria-label', 'Search');
+        searchButton.setAttribute('title', 'Search');
+        searchButton.innerHTML = '🔍';
+        this.fixedSidebar.appendChild(searchButton);
+
+        const settingsButton = document.createElement('button');
+        settingsButton.setAttribute('aria-label', 'Settings');
+        settingsButton.setAttribute('title', 'Settings');
+        settingsButton.innerHTML = '⚙️';
+        this.fixedSidebar.appendChild(settingsButton);
 
         // Setup file explorer sidebar
         const existingContainer = document.getElementById(containerId);
@@ -34,7 +48,7 @@ export class Sidebar {
     }
 
     private setupEventListeners() {
-        this.toggle.addEventListener('click', () => {
+        this.explorerButton.addEventListener('click', () => {
             this.isCollapsed = !this.isCollapsed;
             this.updateLayout();
             
@@ -76,47 +90,18 @@ export class Sidebar {
     private updateLayout() {
         // Update sidebar classes
         this.container.classList.toggle('collapsed', this.isCollapsed);
+        
+        // Toggle hidden class based on collapsed state
+        this.container.classList.toggle('hidden', this.isCollapsed);
 
         // Update toggle icon
-        const icon = this.toggle.querySelector('.icon');
+        const icon = this.explorerButton.querySelector('.icon');
         if (icon) {
-            icon.textContent = this.isCollapsed ? '📁' : '⬅️';
+            icon.textContent = '📁';
         }
 
         // Always show fixed sidebar
         this.fixedSidebar.style.display = 'block';
-
-        if (this.currentOrientation === 'landscape') {
-            // Landscape mode - both sidebars are part of the grid
-            document.body.style.gridTemplateColumns = this.isCollapsed
-                ? '60px 0 4px 1fr 4px 300px'
-                : '60px 200px 4px 1fr 4px 300px';
-            
-            // Reset any portrait-specific styles
-            this.container.style.position = '';
-            this.container.style.top = '';
-            this.container.style.left = '';
-            this.container.style.height = '';
-            this.container.style.width = '';
-            this.container.style.zIndex = '';
-            this.container.style.transform = '';
-        } else {
-            // Portrait mode - sidebars are fixed
-            document.body.style.gridTemplateColumns = '60px 0 4px 1fr 4px 300px';
-            
-            // Set portrait-specific styles
-            this.container.style.position = 'fixed';
-            this.container.style.top = '50px';
-            this.container.style.left = '0';
-            this.container.style.height = 'calc(100vh - 50px)';
-            this.container.style.width = '100vw';
-            this.container.style.zIndex = '1000';
-            
-            // Use transform for smooth animation instead of width
-            this.container.style.transform = this.isCollapsed
-                ? 'translateX(-100%)'
-                : 'translateX(0)';
-        }
     }
 
     public setContent(contentType: string, content: HTMLElement) {
@@ -270,7 +255,7 @@ export class Sidebar {
     }
 
     public getToggleButton(): HTMLButtonElement {
-        return this.toggle;
+        return this.explorerButton;
     }
 
     public isExplorerCollapsed(): boolean {

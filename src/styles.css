@@ -179,6 +179,10 @@ body.editor-page {
     will-change: transform;
 }
 
+#sidebar.hidden {
+    display: none !important;
+}
+
 .sidebar-toggle {
     padding: 8px;
     width: 32px;
