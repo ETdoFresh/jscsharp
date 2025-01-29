@@ -131,21 +131,33 @@ export class SplitLayout {
 
             // Apply min/max constraints to ratios
             const adjustedRatios = this.state.ratios.map((ratio, index) => {
+                // Skip hidden panels
+                if (this.panels[index].classList.contains('hidden')) {
+                    return 0;
+                }
                 const config = this.panelConfigs[index];
-                const minRatio = config.minRatio ?? 0.1;
+                const minRatio = config.minRatio ?? 0;  // Allow panels to collapse to 0
                 const maxRatio = config.maxRatio ?? 0.8;
                 return Math.min(maxRatio, Math.max(minRatio, ratio));
             });
 
-            // Calculate pixel widths
-            const widths = adjustedRatios.map(ratio => {
-                const width = Math.floor(this.state.containerWidth * ratio);
-                console.log(`Panel width: ${width}px (ratio: ${ratio})`);
-                return width;
+            // Count visible panels and normalize their ratios
+            const visiblePanels = this.panels.filter(p => !p.classList.contains('hidden')).length;
+            const totalRatio = adjustedRatios.reduce((sum, ratio) => sum + ratio, 0);
+            
+            // Adjust ratios to distribute space between visible panels
+            const normalizedRatios = adjustedRatios.map(ratio => {
+                if (totalRatio === 0) return 1 / visiblePanels;
+                return ratio / totalRatio;
             });
 
-            // Update grid template
-            const columns = widths.join('px 4px ') + 'px';
+            // Build grid template columns
+            const columns = this.panels.map((panel, index) => {
+                if (panel.classList.contains('hidden')) return '0';
+                const width = Math.floor(this.state.containerWidth * normalizedRatios[index]);
+                return width + 'px';
+            }).join(' 4px ');
+
             this.container.style.gridTemplateColumns = columns;
 
             // Save ratios
@@ -163,7 +175,7 @@ export class SplitLayout {
 
         // Calculate the position as a ratio
         let leftWidth = mouseX;
-        const minLeftWidth = totalWidth * (this.panelConfigs[separatorIndex].minRatio ?? 0.1);
+        const minLeftWidth = totalWidth * (this.panelConfigs[separatorIndex].minRatio ?? 0);
         const maxLeftWidth = totalWidth * (this.panelConfigs[separatorIndex].maxRatio ?? 0.8);
         
         // Constrain the width

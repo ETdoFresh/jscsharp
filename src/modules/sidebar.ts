@@ -51,7 +51,9 @@ export class Sidebar {
         this.explorerButton.addEventListener('click', () => {
             this.isCollapsed = !this.isCollapsed;
             this.updateLayout();
-            
+            window.dispatchEvent(new Event('resize')); // Trigger split layout update
+
+
             // Force content redraw when expanding
             if (!this.isCollapsed) {
                 requestAnimationFrame(() => {

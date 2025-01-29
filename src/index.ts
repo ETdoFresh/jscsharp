@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize the split layout
     console.log('Creating SplitLayout instance');
     const splitLayout = new SplitLayout('main-container', [
+        // [minRatio, maxRatio] values allow sidebar to collapse to 0
         { id: 'sidebar', minRatio: 0.1, maxRatio: 0.3 },
         { id: 'editor', minRatio: 0.3, maxRatio: 0.6 },
         { id: 'preview', minRatio: 0.2, maxRatio: 0.5 }
@@ -96,6 +97,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Set initial ratios after all panels are initialized
-        splitLayout.setRatios([0.2, 0.5, 0.3]);
+        splitLayout.setRatios([0.2, 0.4, 0.4]);
     });
 });
