@@ -264,6 +264,17 @@ body.editor-page {
     min-width: 200px;
 }
 
+.editor-area {
+    display: block;
+    height: 100%;
+    flex: 1;
+    overflow: auto;
+    border: none;
+    padding: 1rem;
+    box-sizing: border-box;
+    resize: none;
+}
+
 .preview-panel {
     background-color: var(--preview-peach);
     display: flex;
